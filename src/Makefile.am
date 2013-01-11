@@ -19,26 +19,26 @@ SUBDIRS = hashkit proto
 
 bin_PROGRAMS = nutcracker
 
-nutcracker_SOURCES =			\
-	nc_core.c nc_core.h		\
-	nc_connection.c nc_connection.h	\
-	nc_client.c nc_client.h		\
-	nc_server.c nc_server.h		\
-	nc_proxy.c nc_proxy.h		\
-	nc_message.c nc_message.h	\
-	nc_request.c			\
-	nc_response.c			\
-	nc_mbuf.c nc_mbuf.h		\
-	nc_event.c nc_event.h		\
-	nc_conf.c nc_conf.h		\
-	nc_stats.c nc_stats.h		\
-	nc_signal.c nc_signal.h		\
-	nc_rbtree.c nc_rbtree.h		\
-	nc_log.c nc_log.h		\
-	nc_string.c nc_string.h		\
-	nc_array.c nc_array.h		\
-	nc_util.c nc_util.h		\
-	nc_queue.h			\
+nutcracker_SOURCES =				\
+	nc_core.c nc_core.h			\
+	nc_connection.c nc_connection.h		\
+	nc_client.c nc_client.h			\
+	nc_server.c nc_server.h			\
+	nc_proxy.c nc_proxy.h			\
+	nc_message.c nc_message.h		\
+	nc_request.c				\
+	nc_response.c				\
+	nc_mbuf.c nc_mbuf.h			\
+	event/nc_event.c event/nc_event.h	\
+	nc_conf.c nc_conf.h			\
+	nc_stats.c nc_stats.h			\
+	nc_signal.c nc_signal.h			\
+	nc_rbtree.c nc_rbtree.h			\
+	nc_log.c nc_log.h			\
+	nc_string.c nc_string.h			\
+	nc_array.c nc_array.h			\
+	nc_util.c nc_util.h			\
+	nc_queue.h				\
 	nc.c
 
 nutcracker_LDADD = $(top_builddir)/src/hashkit/libhashkit.a

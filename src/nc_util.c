@@ -617,3 +617,18 @@ nc_unresolve_desc(int sd)
 
     return nc_unresolve_addr(addr, addrlen);
 }
+
+/*
+ * Convert ms to timespec structure
+ */
+struct timespec
+nc_ms_to_timespec (int ms)
+{
+    struct timeval tv = {ms/1000LL, (ms%1000LL)*1000LL};
+    struct timespec ts;
+
+    TIMEVAL_TO_TIMESPEC(&tv, &ts);
+
+    return ts;
+}
+
