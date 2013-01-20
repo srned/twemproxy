@@ -21,11 +21,11 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/epoll.h>
 #include <netinet/in.h>
 
 #include <nc_core.h>
 #include <nc_server.h>
+#include <event/nc_event.h>
 
 struct stats_desc {
     char *name; /* stats name */

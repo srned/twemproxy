@@ -55,6 +55,7 @@ nc_event_init(struct nc_event *event)
 static void
 nc_event_deinit(struct nc_event *event)
 {
+    int status;
     struct nc_event_state *e_state = event->event_data;
 
     ASSERT(e_state->kq >= 0);
@@ -75,10 +76,10 @@ nc_event_add(struct nc_event *event, int fd, int mask, int new,
     struct nc_event_state *e_state = event->event_data;
     struct kevent ke;
     int status;
+    memset(&ke, 0, sizeof(struct kevent));
 
-    ke.udata = data;
     if (mask & NC_EV_READABLE) {
-        EV_SET(&ke, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+        EV_SET(&ke, fd, EVFILT_READ, EV_ADD, 0, 0, data);
         status = kevent(e_state->kq, &ke, 1, NULL, 0, NULL);
         if (status == -1) {
             log_error("kqueue ctl on e %d sd %d failed: %s", e_state->kq, 
@@ -87,7 +88,7 @@ nc_event_add(struct nc_event *event, int fd, int mask, int new,
         }
     }
     if (mask & NC_EV_WRITABLE) {
-        EV_SET(&ke, fd, EVFILT_WRITE, EV_ADD, 0, 0, NULL);
+        EV_SET(&ke, fd, EVFILT_WRITE, EV_ADD, 0, 0, data);
         status = kevent(e_state->kq, &ke, 1, NULL, 0, NULL);
         if (status == -1) {
             log_error("kqueue ctl on e %d sd %d failed: %s", e_state->kq,
@@ -105,24 +106,13 @@ nc_event_del(struct nc_event *event, int fd, int mask, int new, void *data)
     struct kevent ke;
     int status;
 
-    ke.udata = data;
     if (mask & NC_EV_READABLE) {
         EV_SET(&ke, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
-        status = kevent(e_state->kq, &ke, 1, NULL, 0, NULL);
-        if (status == -1) {
-            log_error("kqueue ctl on e %d sd %d failed: %s", e_state->kq, 
-                    fd,strerror(errno));
-            return -1;
-        }
+        kevent(e_state->kq, &ke, 1, NULL, 0, NULL);
     }
     if (mask & NC_EV_WRITABLE) {
         EV_SET(&ke, fd, EVFILT_WRITE, EV_DELETE, 0, 0, NULL);
-        status = kevent(e_state->kq, &ke, 1, NULL, 0, NULL);
-        if (status == -1) {
-            log_error("kqueue ctl on e %d sd %d failed: %s", e_state->kq,
-                    fd,strerror(errno));
-            return -1;
-        }
+        kevent(e_state->kq, &ke, 1, NULL, 0, NULL);
     }
     return 0;
 }
@@ -135,10 +125,10 @@ nc_event_wait(struct nc_event *event, int timeout)
     uint32_t mask = 0;
 
     ASSERT(event->event_data != NULL);
-    ASSERT(event->event_data->ep > 0);
+    ASSERT(event->event_data->kq > 0);
 
     e_state = event->event_data;
-
+    struct kevent ke;
     for (;;) {
         if (timeout != -1) {
             struct timespec ts = nc_ms_to_timespec(timeout);
@@ -151,7 +141,7 @@ nc_event_wait(struct nc_event *event, int timeout)
         }
         if (nsd > 0) {
             for (i = 0; i < nsd; i++) {
-                struct kevent *e = e_state->events+j;
+                struct kevent *e = e_state->events+i;
                 mask = 0;
 
                 if (e->flags == EV_ERROR) {
@@ -180,8 +170,10 @@ nc_event_wait(struct nc_event *event, int timeout)
                 if (e->filter == EVFILT_WRITE)
                     mask |= NC_EV_WRITABLE;
 
-                if (event->event_proc != NULL)
+                log_error("mask: %d", mask);
+                if (event->event_proc != NULL) {
                     event->event_proc(e->udata, mask);
+                }
             }
             return nsd;
         }

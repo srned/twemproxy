@@ -18,10 +18,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include <sys/epoll.h>
-
 #include <nc_core.h>
-#include <event/nc_event.h>
 #include <nc_conf.h>
 #include <nc_server.h>
 #include <nc_proxy.h>
