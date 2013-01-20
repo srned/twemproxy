@@ -170,7 +170,6 @@ nc_event_wait(struct nc_event *event, int timeout)
                 if (e->filter == EVFILT_WRITE)
                     mask |= NC_EV_WRITABLE;
 
-                log_error("mask: %d", mask);
                 if (event->event_proc != NULL) {
                     event->event_proc(e->udata, mask);
                 }
