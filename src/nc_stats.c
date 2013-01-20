@@ -888,7 +888,9 @@ stats_stop_aggregator(struct stats *st)
     }
 
     close(st->sd);
-    event_deinit(st->event);
+    if (st->event != NULL) {
+        event_deinit(st->event);
+    }
 }
 
 struct stats *

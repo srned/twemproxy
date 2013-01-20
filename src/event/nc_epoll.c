@@ -113,10 +113,10 @@ nc_event_del(struct nc_event *event, int fd, int mask,
     else { 
         op = EPOLL_CTL_MOD;
         ee.events = (uint32_t)(EPOLLET);
-        if (mask & NC_EV_READABLE) {
+        if ((mask & NC_EV_READABLE) == 0) {
             ee.events |= EPOLLIN;
         }
-        if (mask & NC_EV_WRITABLE) {
+        if ((mask & NC_EV_WRITABLE) == 0) {
             ee.events |= EPOLLOUT;
         }
         ee.data.ptr = data;

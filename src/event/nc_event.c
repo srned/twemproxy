@@ -72,7 +72,7 @@ event_add_out(struct nc_event *event, struct conn *c)
         return 0;
     }
 
-    status = nc_event_add(event, c->sd, NC_EV_WRITABLE, 
+    status = nc_event_add(event, c->sd, NC_EV_READABLE | NC_EV_WRITABLE, 
             !NC_EV_NONE, 1, c);
     if (status == 0) {
         c->send_active = 1;
